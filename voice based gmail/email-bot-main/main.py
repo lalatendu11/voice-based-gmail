@@ -1,66 +1,45 @@
-import smtplib
-import speech_recognition as sr
-import pyttsx3
-from email.message import EmailMessage
-
-listener = sr.Recognizer()
-engine = pyttsx3.init()
+from text_speech import *
+from send import *
+from listmessages import *
 
 
-def talk(text):
-    engine.say(text)
-    engine.runAndWait()
+
+while True :
 
 
-def get_info():
-    try:
-        with sr.Microphone() as source:
-            print('listening...')
-            voice = listener.listen(source)
-            info = listener.recognize_google(voice)
-            print(info)
-            return info.lower()
-    except:
-        pass
+ text_to_speech('say 1 to send a message !')
+ text_to_speech('say 2 to receive messages !')
+ text_to_speech('say 3 to close the application !')
 
+ first_response=speech_to_text()
 
-def send_email(receiver, subject, message):
-    server = smtplib.SMTP('smtp.gmail.com', 587)
-    server.starttls()
-    # Make sure to give app access in your Google account
-    server.login('Sender_Email', 'Sender_Email_password')
-    email = EmailMessage()
-    email['From'] = 'Sender_Email'
-    email['To'] = receiver
-    email['Subject'] = subject
-    email.set_content(message)
-    server.send_message(email)
+ if first_response == '1' :
+  send_message()
 
+ elif first_response == '2' or first_response == 'tu' or first_response == 'two' or first_response == 'Tu' or first_response == 'to' or first_response == 'To' :
+  text_to_speech('say 1 for top ten messages')
+  text_to_speech('say 2 to search for a sender')
+  receive_response=speech_to_text()
+  if receive_response == '1' :
+   get_message_list()
+  if receive_response == '2' or receive_response == 'Tu' or receive_response == 'tu' or receive_response == 'two' or receive_response == 'To' or receive_response == 'to':
+   text_to_speech('Say the E-Mail of the sender!')
+   email=speech_to_text()
+   words=email.split()
+   modified_mail=str()
+   for word in words:
+     if word == 'underscore':
+       modified_mail=modified_mail+'_'
+     elif word == 'dot':
+       modified_mail=modified_mail+'.'
+     else:
+       modified_mail=modified_mail+word
 
-email_list = {
-    'dude': 'COOL_DUDE_EMAIL',
-    'bts': 'diamond@bts.com',
-    'pink': 'jennie@blackpink.com',
-    'lisa': 'lisa@blackpink.com',
-    'irene': 'irene@redvelvet.com'
-}
-
-
-def get_email_info():
-    talk('To Whom you want to send email')
-    name = get_info()
-    receiver = email_list[name]
-    print(receiver)
-    talk('What is the subject of your email?')
-    subject = get_info()
-    talk('Tell me the text in your email')
-    message = get_info()
-    send_email(receiver, subject, message)
-    talk('Hey lazy ass. Your email is sent')
-    talk('Do you want to send more email?')
-    send_more = get_info()
-    if 'yes' in send_more:
-        get_email_info()
-
-
-get_email_info()
+   modified_mail=modified_mail.lower()
+   #query=speech_to_text()
+   searched_message(modified_mail)
+ elif first_response == '3':
+  exit()
+ else:
+  text_to_speech('Sorry you were not clear with your vocals !')
+  continue
